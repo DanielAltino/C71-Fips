@@ -61,8 +61,6 @@ public class IdentificationFragment extends KeyDwonFragment implements View.OnCl
 	TextView tvVersion;
 	String oldMsg="";
 	Handler handler=new Handler();
-	Button BackToClient;
-	int userId = -1;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -103,8 +101,16 @@ public class IdentificationFragment extends KeyDwonFragment implements View.OnCl
 		Stop.setOnClickListener(this);
 		btnIdent.setOnClickListener(this);
 		mContext.mFingerprint.setIdentificationCallBack(new IdentificationCall());
-        BackToClient = (Button) getView().findViewById(R.id.BackToClient);
-        BackToClient.setOnClickListener(this);
+
+
+		if(!mContext.isPower){
+			Toast.makeText(mContext,"The fingerprints did not run powered on!",Toast.LENGTH_SHORT).show();
+			return;
+		}
+		btnIdent.setEnabled(false);
+		tvID.setText("");
+		mContext.mFingerprint.startIdentification();
+
 	}
 
 	public void scrollToBottom(final View inner) {
@@ -132,15 +138,6 @@ public class IdentificationFragment extends KeyDwonFragment implements View.OnCl
 			case  R.id.Stop:
 				mContext.mFingerprint.stopIdentification();
 				break;
-			case R.id.BackToClient:
-
-				Intent intentRetorna = new Intent();
-				intentRetorna.putExtra("Key", Integer.toString(userId));
-
-				mContext.setResult(1, intentRetorna);
-
-				mContext.finish();
-				break;
 		}
 	}
 
@@ -164,13 +161,25 @@ public class IdentificationFragment extends KeyDwonFragment implements View.OnCl
 			Log.i(TAG, "failuerCode="+failuerCode);
 			if(result) {
 				tvID.setText("fingerprintID=" + i);
-				userId = i;
+
+
 				mContext.playSound(1);
+
+				retornaIntent(i);
 			}else{
 				mContext.playSound(2);
 			}
 			btnIdent.setEnabled(true);
 		}
 
+	}
+	private void retornaIntent(int userId){
+		Intent intentRetorna = new Intent();
+
+		intentRetorna.putExtra("Key", Integer.toString(userId));
+
+		mContext.setResult(1, intentRetorna);
+
+		mContext.finish();
 	}
 }

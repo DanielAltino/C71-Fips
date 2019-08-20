@@ -48,7 +48,7 @@ import java.util.HashMap;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private final static String TAG = "MainActivity111";
+    private final static String TAG = "MainActivity";
     public FingerprintWithFIPS mFingerprint;
     private FragmentTabHost mTabHost;
     private FragmentManager fm;
@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     public Intent goingBackToClient = new Intent();
 
     public String textClient = "";
+
+    public String login = "";
 
     public void GoingBackToClient(){
         Toast.makeText(MainActivity.this, "Going BACKK", Toast.LENGTH_SHORT).show();
@@ -107,22 +109,33 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected void initViewPageData() {
+
+
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         fm = getSupportFragmentManager();
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, fm, R.id.realtabcontent);
 
-        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_identification)).setIndicator(getString(R.string.fingerprint_tab_identification)),
-                IdentificationFragment.class, null);
+        if (login.equals("")){
+            mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_acquisition)).setIndicator(getString(R.string.fingerprint_tab_acquisition)),
+                    AcquisitionFragment.class, null);
+        }
+        else
+            mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_identification)).setIndicator(getString(R.string.fingerprint_tab_identification)),
+             IdentificationFragment.class, null);
 
-       mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_verify)).setIndicator(getString(R.string.fingerprint_tab_verify)),
-              TemplateVerify.class, null);
+        //mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_identification)).setIndicator(getString(R.string.fingerprint_tab_identification)),
+                        // IdentificationFragment.class, null);
 
-        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_acquisition)).setIndicator(getString(R.string.fingerprint_tab_acquisition)),
-                AcquisitionFragment.class, null);
+       //mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.fingerprint_tab_verify)).setIndicator(getString(R.string.fingerprint_tab_verify)),
+                        // TemplateVerify.class, null);
 
-        mTabHost.addTab(mTabHost.newTabSpec("GRAB").setIndicator("GRAB"),
-                GRABFragment.class, null);
+
+        //mTabHost.addTab(mTabHost.newTabSpec("GRAB").setIndicator("GRAB"),
+                       // GRABFragment.class, null);
+
+
 
         boolean result;
         File file=new File(FileUtils.PATH);
@@ -245,10 +258,10 @@ public class MainActivity extends AppCompatActivity {
 
     void handleSendText(Intent intent) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-        if (sharedText != null) {
+        if (sharedText != null && !sharedText.equals("")) {
             // Update UI to reflect text being shared
             textClient = sharedText;
-
+            login = sharedText;
         }
     }
 
